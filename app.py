@@ -33,7 +33,7 @@ try:
 
     print("🔹 Loading smaller LLM...")
     llm = HuggingFaceHub(
-        repo_id="google/flan-t5-small",  # changed from flan-t5-base to reduce memory usage
+        repo_id="google/flan-t5-small",  # smaller model to reduce memory usage
         model_kwargs={"temperature": 0.5, "max_length": 512}
     )
 
@@ -57,8 +57,8 @@ def query():
         return jsonify({"error": "QA pipeline not initialized"}), 500
 
     try:
-        answer = qa.invoke({"query": question})  # changed from .run() to .invoke()
-        return jsonify({"answer": answer})
+        result = qa.invoke({"query": question})  # Correct use of invoke()
+        return jsonify({"answer": result['result']})  # Extract plain text from response
     except Exception as e:
         print("❌ Error while running QA:", str(e))
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
