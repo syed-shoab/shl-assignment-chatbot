@@ -13,7 +13,9 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-def init_qa_pipeline():
+# Initialize QA pipeline
+qa = None
+try:
     print("🔹 Loading documents...")
     loader = TextLoader("assessments.txt")
     documents = loader.load()
@@ -29,34 +31,37 @@ def init_qa_pipeline():
     db = FAISS.from_documents(docs, embeddings)
     retriever = db.as_retriever()
 
-    print("🔹 Loading LLM...")
+    print("🔹 Loading smaller LLM...")
     llm = HuggingFaceHub(
-        repo_id="tiiuae/falcon-rw-1b",  # 🔄 try this model or any lighter one
-        model_kwargs={"temperature": 0.5}
+        repo_id="google/flan-t5-small",  # changed from flan-t5-base to reduce memory usage
+        model_kwargs={"temperature": 0.5, "max_length": 512}
     )
 
     print("🔹 Creating RetrievalQA chain...")
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-    return qa
 
-@app.route('/query', methods=['GET', 'POST'])
+    print("✅ QA pipeline initialized successfully!")
+
+except Exception as e:
+    print("❌ Failed to initialize QA pipeline:", str(e))
+
+@app.route('/query', methods=['POST'])
 def query():
-    if request.method == 'GET':
-        return jsonify({"message": "Use POST to send a question."})
-    
     data = request.get_json()
-    question = data.get("question", "")
+    question = data.get("question", "").strip()
+
     if not question:
         return jsonify({"error": "Question field is required"}), 400
 
+    if qa is None:
+        return jsonify({"error": "QA pipeline not initialized"}), 500
+
     try:
-        qa = init_qa_pipeline()
-        answer = qa.invoke(question)
+        answer = qa.invoke({"query": question})  # changed from .run() to .invoke()
         return jsonify({"answer": answer})
     except Exception as e:
         print("❌ Error while running QA:", str(e))
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
