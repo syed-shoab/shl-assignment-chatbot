@@ -1,0 +1,20 @@
+Cognitive Ability Test: Measures problem-solving, critical thinking, and learning capabilities.
+Numerical Reasoning Test: Assesses ability to work with numbers, charts, and interpret data accurately.
+Verbal Reasoning Test: Evaluates understanding, interpretation, and logical analysis of written information.
+Logical Reasoning Test: Tests ability to identify patterns and relationships using abstract logic.
+Situational Judgement Test (SJT): Measures judgment and decision-making in realistic workplace scenarios.
+Personality Questionnaire: Evaluates work-related personality traits and behavior preferences.
+Motivation Questionnaire: Assesses what drives and energizes an individual in a work environment.
+Deductive Reasoning Assessment: Tests logical deduction skills from general rules to specific conclusions.
+Inductive Reasoning Assessment: Measures the ability to identify rules or patterns from data.
+Occupational Personality Questionnaire (OPQ): Analyzes personality traits and how they affect work performance.
+Leadership Assessment: Evaluates leadership style, influence, decision-making, and strategic thinking.
+Sales Potential Assessment: Identifies traits and abilities relevant for successful sales roles.
+Customer Service Skills Test: Measures empathy, communication, and issue-resolution in customer-facing roles.
+Technical Skills Test: Assesses domain-specific knowledge such as programming, engineering, or IT.
+English Language Proficiency Test: Evaluates grammar, vocabulary, and reading comprehension in English.
+Executive Potential Assessment: Identifies readiness for senior leadership and executive roles.
+Remote Work Readiness Assessment: Measures traits and behaviors essential for productivity in remote environments.
+Teamwork & Collaboration Test: Assesses cooperation, conflict resolution, and contribution in team settings.
+Time Management Assessment: Evaluates ability to plan, prioritize, and use time efficiently under pressure.
+Workplace Safety Awareness Test: Measures knowledge and attitudes toward health and safety regulations at work.
