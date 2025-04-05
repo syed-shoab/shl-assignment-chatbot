@@ -13,9 +13,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-# Initialize QA pipeline
-qa = None
-try:
+def init_qa_pipeline():
     print("🔹 Loading documents...")
     loader = TextLoader("assessments.txt")
     documents = loader.load()
@@ -33,17 +31,13 @@ try:
 
     print("🔹 Loading LLM...")
     llm = HuggingFaceHub(
-        repo_id="google/flan-t5-small",  # ✅ smaller model to avoid memory crash
+        repo_id="tiiuae/falcon-rw-1b",  # 🔄 try this model or any lighter one
         model_kwargs={"temperature": 0.5}
     )
 
     print("🔹 Creating RetrievalQA chain...")
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-
-    print("✅ QA pipeline initialized successfully!")
-
-except Exception as e:
-    print("❌ Failed to initialize QA pipeline:", str(e))
+    return qa
 
 @app.route('/query', methods=['POST'])
 def query():
@@ -52,11 +46,9 @@ def query():
     if not question:
         return jsonify({"error": "Question field is required"}), 400
 
-    if qa is None:
-        return jsonify({"error": "QA pipeline not initialized"}), 500
-
     try:
-        answer = qa.invoke(question)  # ✅ updated from .run() to .invoke()
+        qa = init_qa_pipeline()  # ❗initialize only when needed
+        answer = qa.invoke(question)
         return jsonify({"answer": answer})
     except Exception as e:
         print("❌ Error while running QA:", str(e))
