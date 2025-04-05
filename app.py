@@ -1,21 +1,18 @@
 from flask import Flask, request, jsonify, render_template
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
 import os
-from flask import Flask, request, jsonify
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain.chains import RetrievalQA
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.faiss import FAISS as FAISS_DB
 
 app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 # Load and split documents
 loader = TextLoader("assessments.txt")
@@ -47,9 +44,6 @@ def query():
     return jsonify({"answer": answer})
 
 
-
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))  # default to 5000 if PORT is not set
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
