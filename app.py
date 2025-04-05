@@ -2,17 +2,20 @@ from flask import Flask, request, jsonify, render_template
 import os
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.llms import HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceEndpoint
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.faiss import FAISS as FAISS_DB
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/health')
+def health():
+    return "OK", 200
 
 try:
     print("🔹 Loading documents...")
@@ -27,7 +30,7 @@ try:
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     print("🔹 Creating FAISS vector store...")
-    db = FAISS_DB.from_documents(docs, embeddings)
+    db = FAISS.from_documents(docs, embeddings)
     retriever = db.as_retriever()
 
     print("🔹 Loading LLM...")
@@ -42,7 +45,6 @@ except Exception as e:
     print("❌ Failed to initialize QA pipeline:", str(e))
     qa = None
 
-
 @app.route('/query', methods=['POST'])
 def query():
     data = request.get_json()
@@ -56,7 +58,7 @@ def query():
     answer = qa.run(question)
     return jsonify({"answer": answer})
 
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+# Bind to Render's dynamic port
+if __name__ != "__main__":
+    port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
