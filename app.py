@@ -43,7 +43,8 @@ def query():
 def index():
     return "SHL Assessment Recommender is running!"
 
-if __name__ == '__main__':
-    # Get port from environment (needed for Render)
-    port = int(os.environ.get("PORT", 5000))
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 5000))  # default to 5000 if PORT is not set
     app.run(host='0.0.0.0', port=port)
+
