@@ -4,4 +4,7 @@ huggingface_hub
 faiss-cpu
 python-dotenv
 langchain-community
+sentence-transformers
+pandas
+
 
