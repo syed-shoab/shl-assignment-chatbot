@@ -39,20 +39,24 @@ def init_qa_pipeline():
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
     return qa
 
-@app.route('/query', methods=['POST'])
+@app.route('/query', methods=['GET', 'POST'])
 def query():
+    if request.method == 'GET':
+        return jsonify({"message": "Use POST to send a question."})
+    
     data = request.get_json()
     question = data.get("question", "")
     if not question:
         return jsonify({"error": "Question field is required"}), 400
 
     try:
-        qa = init_qa_pipeline()  # ❗initialize only when needed
+        qa = init_qa_pipeline()
         answer = qa.invoke(question)
         return jsonify({"answer": answer})
     except Exception as e:
         print("❌ Error while running QA:", str(e))
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
