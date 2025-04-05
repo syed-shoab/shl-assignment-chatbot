@@ -1,3 +1,10 @@
+from flask import Flask, request, jsonify, render_template
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
 import os
 from flask import Flask, request, jsonify
 from langchain_community.vectorstores import FAISS
@@ -39,9 +46,7 @@ def query():
     answer = qa.run(question)
     return jsonify({"answer": answer})
 
-@app.route('/')
-def index():
-    return "SHL Assessment Recommender is running!"
+
 
 if __name__ == "__main__":
     import os
