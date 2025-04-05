@@ -1,10 +1,11 @@
 flask
-langchain
+langchain>=0.2.0
+langchain-community
+langchain-huggingface
 huggingface_hub
 faiss-cpu
-python-dotenv
-langchain-community
 sentence-transformers
 pandas
+python-dotenv
 
 
