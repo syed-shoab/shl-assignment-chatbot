@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import os
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_huggingface import HuggingFaceEndpoint
+from langchain_community.llms import HuggingFaceHub
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -13,10 +13,8 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/health')
-def health():
-    return "OK", 200
-
+# Initialize QA pipeline
+qa = None
 try:
     print("🔹 Loading documents...")
     loader = TextLoader("assessments.txt")
@@ -34,7 +32,10 @@ try:
     retriever = db.as_retriever()
 
     print("🔹 Loading LLM...")
-    llm = HuggingFaceEndpoint(repo_id="google/flan-t5-base", temperature=0.5)
+    llm = HuggingFaceHub(
+        repo_id="google/flan-t5-base",
+        model_kwargs={"temperature": 0.5}
+    )
 
     print("🔹 Creating RetrievalQA chain...")
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
@@ -43,7 +44,6 @@ try:
 
 except Exception as e:
     print("❌ Failed to initialize QA pipeline:", str(e))
-    qa = None
 
 @app.route('/query', methods=['POST'])
 def query():
@@ -53,12 +53,15 @@ def query():
         return jsonify({"error": "Question field is required"}), 400
 
     if qa is None:
-        return jsonify({"error": "QA pipeline not initialized on server"}), 500
+        return jsonify({"error": "QA pipeline not initialized"}), 500
 
-    answer = qa.run(question)
-    return jsonify({"answer": answer})
+    try:
+        answer = qa.run(question)
+        return jsonify({"answer": answer})
+    except Exception as e:
+        print("❌ Error while running QA:", str(e))
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
-# Bind to Render's dynamic port
-if __name__ != "__main__":
-    port = int(os.environ.get("PORT", 10000))
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
