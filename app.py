@@ -68,7 +68,7 @@ def ask():
     return jsonify({"assessments": assessments})
 
 
-print(f"Running on port: {port}")
+
 
 # Run app
 if __name__ == '__main__':
