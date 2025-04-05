@@ -33,7 +33,7 @@ try:
 
     print("🔹 Loading LLM...")
     llm = HuggingFaceHub(
-        repo_id="google/flan-t5-base",
+        repo_id="google/flan-t5-small",  # ✅ smaller model to avoid memory crash
         model_kwargs={"temperature": 0.5}
     )
 
@@ -56,7 +56,7 @@ def query():
         return jsonify({"error": "QA pipeline not initialized"}), 500
 
     try:
-        answer = qa.run(question)
+        answer = qa.invoke(question)  # ✅ updated from .run() to .invoke()
         return jsonify({"answer": answer})
     except Exception as e:
         print("❌ Error while running QA:", str(e))
