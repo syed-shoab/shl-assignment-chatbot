@@ -1,0 +1,5 @@
+flask
+langchain
+huggingface_hub
+faiss-cpu
+python-dotenv

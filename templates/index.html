@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SHL Assignment Chatbot</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>SHL Assessment Chatbot</h1>
+  <input type="text" id="query-input" placeholder="Ask something..." style="width: 300px;" />
+  <button onclick="sendQuery()">Send</button>
+
+  <div id="response-output"></div>
+
+  <!-- ✅ MOVE SCRIPT HERE -->
+  <script>
+    async function sendQuery() {
+      const query = document.getElementById("query-input").value;
+      const responseOutput = document.getElementById("response-output");
+      responseOutput.innerHTML = "Loading...";
+
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query })
+        });
+
+        const data = await response.json();
+        if (data.assessments && data.assessments.length > 0) {
+          let tableHTML = `<table>
+            <tr>
+              <th>Assessment Name</th>
+              <th>Duration</th>
+              <th>Skills Covered</th>
+              <th>Target Role</th>
+              <th>Test Type</th>
+            </tr>`;
+
+          data.assessments.forEach(item => {
+            tableHTML += `
+              <tr>
+                <td>${item.name || "-"}</td>
+                <td>${item.duration || "-"}</td>
+                <td>${item.skills || "-"}</td>
+                <td>${item.role || "-"}</td>
+                <td>${item.type || "-"}</td>
+              </tr>`;
+          });
+
+          tableHTML += `</table>`;
+          responseOutput.innerHTML = tableHTML;
+        } else {
+          responseOutput.innerText = "No relevant assessments found.";
+        }
+      } catch (err) {
+        responseOutput.innerText = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
